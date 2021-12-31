@@ -7,6 +7,11 @@ const selectGameStatus = createSelector(
   (state) => state.status
 );
 
+const selectCurrentPiece = createSelector(
+  gameState,
+  (state) => state.currentPiece
+);
+
 const selectDroppedPieces = createSelector(
   gameState,
   (state) => state.droppedPieces
@@ -14,5 +19,6 @@ const selectDroppedPieces = createSelector(
 
 export {
   selectGameStatus,
-  selectDroppedPieces
+  selectCurrentPiece,
+  selectDroppedPieces,
 };
