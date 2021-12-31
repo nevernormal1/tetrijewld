@@ -16,7 +16,7 @@ const randomPiece = () => ({
   id: Date.now(),
   type: Math.floor(Math.random() * 7),
   x: 4,
-  y: 4,
+  y: 0,
   rotation: 0,
 })
 

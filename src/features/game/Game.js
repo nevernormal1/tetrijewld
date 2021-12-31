@@ -100,21 +100,21 @@ const PieceRenderers = [
 
 const Piece = ({ piece }) => {
   const Renderer = PieceRenderers[piece.type];
-
   const offsets = Renderer({ piece });
 
-  const containerClasses = `piece-container x${ piece.x } y${ piece.y }`
-
   return (
-    <div key={ piece.id } className={ containerClasses }>
+    <div
+      key={ piece.id }
+      className="piece-container"
+      style={ { left: `${ piece.x * 64 }px`, top: `${ piece.y * 64 }px` } }
+    >
       {
         offsets.map((offset, index) => {
-          const classNames = `piece-cell x${ offset[0] } y${ offset[1] }`
-
           return (
             <div
               key={`${ piece.id }:${ index }`}
-              className={ classNames }
+              className="piece-cell"
+              style={{ left: `${ offset[0] * 64 }px`, top: `${ offset[1] * 64 }px` }}
             />
           );
         })

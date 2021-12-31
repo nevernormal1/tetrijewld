@@ -4,6 +4,18 @@
   border: 2px solid #AAA;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+
+}
+
+.piece-container, .piece-cell {
+  position: absolute;
+}
+
+.piece-cell {
+  width: 64px;
+  height: 64px;
+  background-color: #ddd;
 }
 
 #heading {
