@@ -4,3 +4,11 @@
   border: 2px solid #AAA;
   margin: 0 auto;
 }
+
+#heading {
+  text-align: center;
+}
+
+.game-title {
+  font-size: 64px;
+}

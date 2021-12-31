@@ -7,7 +7,9 @@ import './App.css';
 function App() {
   return (
     <div className="container">
-      <h1>TetriJewld</h1>
+      <div id="heading">
+        <h1 className="game-title">TetriJewld</h1>
+      </div>
       <Game />
     </div>
   );
