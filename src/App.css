@@ -1,8 +1,9 @@
 #game {
-  height: 500px;
-  width: 500px;
+  height: 512px;
+  width: 512px;
   border: 2px solid #AAA;
   margin: 0 auto;
+  text-align: center;
 }
 
 #heading {
