@@ -1,11 +1,9 @@
 import React from 'react';
 
-import { GameStatuses } from './gameSlice';
+import { GameStatuses, PIECE_CELL_SIZE } from './constants';
 import { selectGameStatus, selectCurrentPiece } from './gameSelectors';
 import { useSelector } from 'react-redux';
 import { PieceFactory } from './pieces/pieces';
-
-const PIECE_CELL_SIZE = 32;
 
 const GameStopped = () => {
   return (

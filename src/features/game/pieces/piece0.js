@@ -1,7 +1,10 @@
 //   *
 //  ***
-const Piece0 = ({ piece }) => ({
-  render: () => {
+
+import { NUM_COLUMNS } from '../constants';
+
+const Piece0 = ({ piece }) => {
+  const render = () => {
     if (piece.rotation === 270) {
       return [
         [0, 1],
@@ -35,10 +38,23 @@ const Piece0 = ({ piece }) => ({
       [1, 1],
       [2, 1],
     ];
-  },
-  width: () => {
+  }
+
+  const width = () => {
     return piece.rotation === 270 || piece.rotation === 90 ?  2 : 3;
   }
-});
+
+  const canRotateRight = () => {
+    const w = width();
+
+    if (w === 3) {
+      return true;
+    }
+
+    return piece.x < NUM_COLUMNS - 2;
+  }
+
+  return { render, width, canRotateRight };
+};
 
 export default Piece0;

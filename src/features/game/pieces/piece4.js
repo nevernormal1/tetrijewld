@@ -39,6 +39,9 @@ const Piece4 = ({ piece }) => ({
   },
   width: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 3 : 2;
+  },
+  canRotateRight: () => {
+    return true;
   }
 });
 

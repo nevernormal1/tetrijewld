@@ -11,6 +11,9 @@ const Piece6 = ({ piece }) => ({
   },
   width: () => {
     return 2;
+  },
+  canRotateRight: () => {
+    return true;
   }
 });
 

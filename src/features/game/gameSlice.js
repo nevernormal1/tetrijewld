@@ -1,13 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
 import { PieceFactory } from './pieces/pieces';
-
-const NUM_COLUMNS = 10;
-
-export const GameStatuses = {
-  stopped: 'stopped',
-  started: 'started',
-}
+import { GameStatuses, NUM_COLUMNS } from './constants';
 
 const initialState = {
   currentPiece: null,
@@ -44,9 +38,13 @@ export const gameSlice = createSlice({
     },
 
     rotateRight: (state) => {
-      state.currentPiece.rotation += 90;
-      if (state.currentPiece.rotation >= 360) {
-        state.currentPiece.rotation -= 360;
+      const piece = PieceFactory(state.currentPiece)
+
+      if (piece.canRotateRight()) {
+        state.currentPiece.rotation += 90;
+        if (state.currentPiece.rotation >= 360) {
+          state.currentPiece.rotation -= 360;
+        }
       }
     },
 

@@ -20,6 +20,9 @@ const Piece2 = ({ piece }) => ({
   },
   width: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 2 : 3;
+  },
+  canRotateRight: () => {
+    return true;
   }
 });
 
