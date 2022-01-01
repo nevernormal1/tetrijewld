@@ -1,3 +1,5 @@
+import { NUM_COLUMNS } from '../constants';
+
 //    **
 //     *
 //     *
@@ -41,7 +43,10 @@ const Piece4 = ({ piece }) => ({
     return piece.rotation === 270 || piece.rotation === 90 ? 3 : 2;
   },
   canRotateRight: () => {
-    return true;
+    if (piece.rotation === 270 || piece.rotation === 90) {
+      return true;
+    }
+    return piece.x < NUM_COLUMNS - 2;
   }
 });
 
