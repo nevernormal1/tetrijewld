@@ -62,9 +62,9 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
   if (currentStatus === GameStatuses.stopped) {
     dispatch(startGame());
   } else {
-    if (keyCode === "ArrowLeft") {
+    if (keyCode === "KeyZ") {
       dispatch(rotateLeft());
-    } else if (keyCode === "ArrowRight") {
+    } else if (keyCode === "ArrowUp") {
       dispatch(rotateRight());
     }
   }

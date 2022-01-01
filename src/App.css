@@ -35,5 +35,11 @@
 }
 
 .instructions {
-  margin-top: 50%;
+  margin-top: 40%;
+}
+
+.instructions table {
+  width: 50%;
+  margin: 0 auto;
+  margin-bottom: 60px;
 }
