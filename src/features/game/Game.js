@@ -128,6 +128,10 @@ const Piece = ({ piece }) => {
 const CurrentPiece = () => {
   const piece = useSelector(selectCurrentPiece);
 
+  if (piece) {
+    console.log("Current piece rotation:", piece.rotation);
+  }
+
   return piece === null ? null : <Piece piece={ piece } />
 }
 

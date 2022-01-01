@@ -33,10 +33,18 @@ export const gameSlice = createSlice({
     introducePiece: (state) => {
     },
 
-    rotateLeft: (state, action) => {
+    rotateLeft: (state) => {
+      state.currentPiece.rotation -= 90;
+      if (state.currentPiece.rotation < 0) {
+        state.currentPiece.rotation += 360;
+      }
     },
 
-    rotateRight: (state, action) => {
+    rotateRight: (state) => {
+      state.currentPiece.rotation += 90;
+      if (state.currentPiece.rotation >= 360) {
+        state.currentPiece.rotation -= 360;
+      }
     },
   },
 });
@@ -50,8 +58,15 @@ export const {
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
   const currentStatus = selectGameStatus(getState());
+
   if (currentStatus === GameStatuses.stopped) {
     dispatch(startGame());
+  } else {
+    if (keyCode === "ArrowLeft") {
+      dispatch(rotateLeft());
+    } else if (keyCode === "ArrowRight") {
+      dispatch(rotateRight());
+    }
   }
 };
 
