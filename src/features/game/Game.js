@@ -4,124 +4,23 @@ import { GameStatuses } from './gameSlice';
 import { selectGameStatus, selectCurrentPiece } from './gameSelectors';
 import { useSelector } from 'react-redux';
 
+import Piece0 from './pieces/piece0';
+import Piece1 from './pieces/piece1';
+import Piece2 from './pieces/piece2';
+import Piece3 from './pieces/piece3';
+import Piece4 from './pieces/piece4';
+import Piece5 from './pieces/piece5';
+import Piece6 from './pieces/piece6';
+
 const PIECE_CELL_SIZE = 32;
 
 const GameStopped = () => {
   return (
     <div className="instructions">
-      PRESS ANY KEY TO START
+      Press any key to start
     </div>
   );
 }
-
-//   *
-//  ***
-const Piece0 = ({ piece }) => {
-  return [
-    [1, 0],
-    [0, 1],
-    [1, 1],
-    [2, 1],
-  ];
-};
-
-//   **
-//  **
-const Piece1 = ({ piece }) => {
-  return [
-    [1, 0],
-    [2, 0],
-    [0, 1],
-    [1, 1],
-  ];
-};
-
-//   **
-//    **
-const Piece2 = ({ piece }) => {
-  return [
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [2, 1],
-  ];
-};
-
-//   *
-//   *
-//   *
-//   *
-const Piece3 = ({ piece }) => {
-  return [
-    [0, 0],
-    [0, 1],
-    [0, 2],
-    [0, 3],
-  ];
-};
-
-//    **
-//     *
-//     *
-const Piece4 = ({ piece }) => {
-  if (piece.rotation === 270) {
-    return [
-      [0, 1],
-      [0, 0],
-      [1, 0],
-      [2, 0],
-    ];
-  }
-
-  if (piece.rotation === 180) {
-    return [
-      [1, 2],
-      [0, 2],
-      [0, 1],
-      [0, 0],
-    ];
-  }
-
-  if (piece.rotation === 90) {
-    return [
-      [2, 0],
-      [2, 1],
-      [1, 1],
-      [0, 1],
-    ];
-  }
-
-  return [
-    [0, 0],
-    [1, 0],
-    [1, 1],
-    [1, 2],
-  ];
-}
-
-//    **
-//    *
-//    *
-const Piece5 = ({ piece }) => {
-  return [
-    [0, 0],
-    [1, 0],
-    [0, 1],
-    [0, 2],
-  ];
-}
-
-//    **
-//    **
-const Piece6 = ({ piece }) => {
-  return [
-    [0, 0],
-    [1, 0],
-    [0, 1],
-    [1, 1],
-  ];
-}
-
 
 const PieceRenderers = [
   Piece0, Piece1, Piece2, Piece3, Piece4, Piece5, Piece6
