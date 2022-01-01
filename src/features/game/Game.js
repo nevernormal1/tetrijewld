@@ -4,6 +4,8 @@ import { GameStatuses } from './gameSlice';
 import { selectGameStatus, selectCurrentPiece } from './gameSelectors';
 import { useSelector } from 'react-redux';
 
+const PIECE_CELL_SIZE = 32;
+
 const GameStopped = () => {
   return (
     <div>
@@ -106,7 +108,7 @@ const Piece = ({ piece }) => {
     <div
       key={ piece.id }
       className="piece-container"
-      style={ { left: `${ piece.x * 64 }px`, top: `${ piece.y * 64 }px` } }
+      style={ { left: `${ piece.x * PIECE_CELL_SIZE }px`, top: `${ piece.y * PIECE_CELL_SIZE }px` } }
     >
       {
         offsets.map((offset, index) => {
@@ -114,7 +116,7 @@ const Piece = ({ piece }) => {
             <div
               key={`${ piece.id }:${ index }`}
               className="piece-cell"
-              style={{ left: `${ offset[0] * 64 }px`, top: `${ offset[1] * 64 }px` }}
+              style={{ left: `${ offset[0] * PIECE_CELL_SIZE }px`, top: `${ offset[1] * PIECE_CELL_SIZE }px` }}
             />
           );
         })

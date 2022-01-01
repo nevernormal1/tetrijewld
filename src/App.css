@@ -1,6 +1,12 @@
+:root {
+  --piece-cell-size: 32px;
+  --num-rows: 15;
+  --num-columns: 10;
+}
+
 #game {
-  height: 512px;
-  width: 512px;
+  height: calc(var(--piece-cell-size) * var(--num-rows));
+  width: calc(var(--piece-cell-size) * var(--num-columns));
   border: 2px solid #AAA;
   margin: 0 auto;
   text-align: center;
@@ -13,9 +19,11 @@
 }
 
 .piece-cell {
-  width: 64px;
-  height: 64px;
-  background-color: #ddd;
+  width: var(--piece-cell-size);
+  height: var(--piece-cell-size);
+  background-color: #DDD;
+  box-sizing: border-box;
+  border: 4px solid #EEE;
 }
 
 #heading {
