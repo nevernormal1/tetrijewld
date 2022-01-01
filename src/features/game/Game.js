@@ -8,8 +8,8 @@ const PIECE_CELL_SIZE = 32;
 
 const GameStopped = () => {
   return (
-    <div>
-      Press space bar to start
+    <div className="instructions">
+      PRESS ANY KEY TO START
     </div>
   );
 }
