@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
+import { PieceFactory } from './pieces/pieces';
+
+const NUM_COLUMNS = 10;
 
 export const GameStatuses = {
   stopped: 'stopped',
@@ -46,6 +49,20 @@ export const gameSlice = createSlice({
         state.currentPiece.rotation -= 360;
       }
     },
+
+    moveLeft: (state) => {
+      if (state.currentPiece.x > 0) {
+        state.currentPiece.x -= 1;
+      }
+    },
+
+    moveRight: (state) => {
+      const piece = PieceFactory(state.currentPiece)
+
+      if (state.currentPiece.x < NUM_COLUMNS - piece.width()) {
+        state.currentPiece.x += 1;
+      }
+    },
   },
 });
 
@@ -53,7 +70,9 @@ export const {
   startGame,
   introducePiece,
   rotateLeft,
-  rotateRight
+  rotateRight,
+  moveLeft,
+  moveRight,
 } = gameSlice.actions;
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
@@ -66,6 +85,10 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
       dispatch(rotateLeft());
     } else if (keyCode === "ArrowUp") {
       dispatch(rotateRight());
+    } else if (keyCode === "ArrowLeft") {
+      dispatch(moveLeft());
+    } else if (keyCode === "ArrowRight") {
+      dispatch(moveRight());
     }
   }
 };

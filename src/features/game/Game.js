@@ -3,14 +3,7 @@ import React from 'react';
 import { GameStatuses } from './gameSlice';
 import { selectGameStatus, selectCurrentPiece } from './gameSelectors';
 import { useSelector } from 'react-redux';
-
-import Piece0 from './pieces/piece0';
-import Piece1 from './pieces/piece1';
-import Piece2 from './pieces/piece2';
-import Piece3 from './pieces/piece3';
-import Piece4 from './pieces/piece4';
-import Piece5 from './pieces/piece5';
-import Piece6 from './pieces/piece6';
+import { PieceFactory } from './pieces/pieces';
 
 const PIECE_CELL_SIZE = 32;
 
@@ -43,13 +36,8 @@ const GameStopped = () => {
   );
 }
 
-const PieceRenderers = [
-  Piece0, Piece1, Piece2, Piece3, Piece4, Piece5, Piece6
-]
-
 const Piece = ({ piece }) => {
-  const Renderer = PieceRenderers[piece.type];
-  const offsets = Renderer({ piece });
+  const offsets = PieceFactory(piece).render();
 
   return (
     <div
