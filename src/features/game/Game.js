@@ -1,7 +1,11 @@
 import React from 'react';
 
 import { GameStatuses, PIECE_CELL_SIZE } from './constants';
-import { selectGameStatus, selectCurrentPiece } from './gameSelectors';
+import {
+  selectGameStatus,
+  selectCurrentPiece,
+  selectDroppedPieces,
+} from './gameSelectors';
 import { useSelector } from 'react-redux';
 import { PieceFactory } from './pieces/pieces';
 
@@ -58,11 +62,19 @@ const Piece = ({ piece }) => {
   )
 }
 
+const DroppedPieces = () => {
+  const pieces = useSelector(selectDroppedPieces);
+
+  return pieces.map(piece => (
+    <Piece key={ piece.id } piece={ piece } />
+  ))
+};
+
 const CurrentPiece = () => {
   const piece = useSelector(selectCurrentPiece);
 
   return piece === null ? null : <Piece piece={ piece } />
-}
+};
 
 const Game = () => {
   const gameStatus = useSelector(selectGameStatus);
@@ -72,6 +84,7 @@ const Game = () => {
       { gameStatus === GameStatuses.stopped &&
         <GameStopped /> }
       <CurrentPiece />
+      <DroppedPieces />
     </div>
   );
 }

@@ -39,9 +39,6 @@ export const gameSlice = createSlice({
       state.lastAdvanceTime = Date.now();
     },
 
-    introducePiece: (state) => {
-    },
-
     rotateLeft: (state) => {
       const currentPiece = state.currentPiece;
 
@@ -95,6 +92,10 @@ export const gameSlice = createSlice({
       if (advancedPiece.y + advancedPieceObject.height() <= NUM_ROWS) {
         state.currentPiece.y = advancedPiece.y;
         state.lastAdvanceTime = Date.now();
+      } else {
+        state.droppedPieces.push(state.currentPiece);
+        // Introduce new piece
+        state.currentPiece = randomPiece();
       }
     },
   },
