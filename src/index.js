@@ -28,9 +28,9 @@ const onKeydown = (event) => {
 document.addEventListener('keydown', onKeydown);
 
 // Start event loop
-//window.setInterval(() => {
-//  store.dispatch(handleGameTick());
-//}, 30);
+window.setInterval(() => {
+  store.dispatch(handleGameTick());
+}, 30);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
