@@ -47,13 +47,6 @@ const Piece4 = ({ piece }) => ({
   height: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 2 : 3;
   },
-
-  canRotateRight: () => {
-    if (piece.rotation === 270 || piece.rotation === 90) {
-      return true;
-    }
-    return piece.x < NUM_COLUMNS - 2;
-  }
 });
 
 export default Piece4;

@@ -41,13 +41,17 @@ export const gameSlice = createSlice({
     },
 
     rotateRight: (state) => {
-      const piece = PieceFactory(state.currentPiece)
+      const currentPiece = state.currentPiece;
 
-      if (piece.canRotateRight()) {
-        state.currentPiece.rotation += 90;
-        if (state.currentPiece.rotation >= 360) {
-          state.currentPiece.rotation -= 360;
-        }
+      const rotatedPiece = {
+        ...currentPiece,
+        rotation: (currentPiece.rotation + 90) % 360
+      };
+
+      const rotatedPieceObject = PieceFactory(rotatedPiece);
+
+      if (rotatedPiece.x + rotatedPieceObject.width() <= NUM_COLUMNS) {
+        state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
 

@@ -30,14 +30,6 @@ const Piece3 = ({ piece }) => ({
   height: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 1 : 4;
   },
-
-  canRotateRight: () => {
-    if (piece.rotation === 270 || piece.rotation === 90) {
-      return true;
-    }
-
-    return piece.x < NUM_COLUMNS - 3;
-  }
 });
 
 export default Piece3;

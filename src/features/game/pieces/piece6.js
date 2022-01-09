@@ -17,10 +17,6 @@ const Piece6 = ({ piece }) => ({
   height: () => {
     return 2;
   },
-
-  canRotateRight: () => {
-    return true;
-  }
 });
 
 export default Piece6;
