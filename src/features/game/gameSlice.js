@@ -66,7 +66,9 @@ export const gameSlice = createSlice({
     },
 
     advancePiece: (state) => {
-      if (state.currentPiece.y < NUM_ROWS) {
+      const piece = PieceFactory(state.currentPiece)
+
+      if (state.currentPiece.y + piece.height() < NUM_ROWS) {
         state.currentPiece.y += 1;
         state.lastAdvanceTime = Date.now();
       }

@@ -39,9 +39,15 @@ const Piece4 = ({ piece }) => ({
       [1, 2],
     ];
   },
+
   width: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 3 : 2;
   },
+
+  height: () => {
+    return piece.rotation === 270 || piece.rotation === 90 ? 2 : 3;
+  },
+
   canRotateRight: () => {
     if (piece.rotation === 270 || piece.rotation === 90) {
       return true;

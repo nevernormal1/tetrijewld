@@ -22,9 +22,15 @@ const Piece3 = ({ piece }) => ({
       [0, 3],
     ];
   },
+
   width: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 4 : 1;
   },
+
+  height: () => {
+    return piece.rotation === 270 || piece.rotation === 90 ? 1 : 4;
+  },
+
   canRotateRight: () => {
     if (piece.rotation === 270 || piece.rotation === 90) {
       return true;

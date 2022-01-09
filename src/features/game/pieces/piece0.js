@@ -43,6 +43,10 @@ const Piece0 = ({ piece }) => ({
     return piece.rotation === 270 || piece.rotation === 90 ?  2 : 3;
   },
 
+  height: () => {
+    return piece.rotation === 270 || piece.rotation === 90 ?  3 : 2;
+  },
+
   canRotateRight: () => {
     if (piece.rotation === 0 || piece.rotation === 180) {
       return true;

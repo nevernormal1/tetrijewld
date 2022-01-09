@@ -9,9 +9,15 @@ const Piece6 = ({ piece }) => ({
       [1, 1],
     ];
   },
+
   width: () => {
     return 2;
   },
+
+  height: () => {
+    return 2;
+  },
+
   canRotateRight: () => {
     return true;
   }
