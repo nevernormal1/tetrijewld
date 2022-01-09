@@ -19,6 +19,15 @@ const randomPiece = () => ({
   rotation: 0,
 })
 
+const roomForPiece = (piece) => {
+  const pieceObject = PieceFactory(piece);
+
+  const spaceOnRight = piece.x + pieceObject.width() <= NUM_COLUMNS
+  const spaceOnBottom = piece.y + pieceObject.height() <= NUM_ROWS
+
+  return spaceOnRight && spaceOnBottom;
+};
+
 export const gameSlice = createSlice({
   name: 'game',
   initialState,
@@ -34,9 +43,15 @@ export const gameSlice = createSlice({
     },
 
     rotateLeft: (state) => {
-      state.currentPiece.rotation -= 90;
-      if (state.currentPiece.rotation < 0) {
-        state.currentPiece.rotation += 360;
+      const currentPiece = state.currentPiece;
+
+      const rotatedPiece = {
+        ...currentPiece,
+        rotation: (currentPiece.rotation + 270) % 360
+      };
+
+      if (roomForPiece(rotatedPiece)) {
+        state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
 
@@ -48,9 +63,7 @@ export const gameSlice = createSlice({
         rotation: (currentPiece.rotation + 90) % 360
       };
 
-      const rotatedPieceObject = PieceFactory(rotatedPiece);
-
-      if (rotatedPiece.x + rotatedPieceObject.width() <= NUM_COLUMNS) {
+      if (roomForPiece(rotatedPiece)) {
         state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
