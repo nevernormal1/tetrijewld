@@ -4,7 +4,11 @@ import './index.css';
 import App from './App';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
-import { handleKeydown } from './features/game/gameSlice';
+import {
+  handleKeydown,
+  handleGameTick,
+} from './features/game/gameSlice';
+
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
@@ -22,6 +26,11 @@ const onKeydown = (event) => {
 }
 
 document.addEventListener('keydown', onKeydown);
+
+// Start event loop
+window.setInterval(() => {
+  store.dispatch(handleGameTick());
+}, 30);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

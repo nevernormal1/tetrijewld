@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
 import { PieceFactory } from './pieces/pieces';
-import { GameStatuses, NUM_COLUMNS } from './constants';
+import { GameStatuses, NUM_ROWS, NUM_COLUMNS } from './constants';
 
 const initialState = {
   currentPiece: null,
+  lastAdvanceTime: null,
+  dropSpeed: 1000,
   status: GameStatuses.stopped,
   droppedPieces: [],
 };
@@ -25,6 +27,7 @@ export const gameSlice = createSlice({
       state.status = GameStatuses.started;
       state.droppedPieces = [];
       state.currentPiece = randomPiece();
+      state.lastAdvanceTime = Date.now();
     },
 
     introducePiece: (state) => {
@@ -61,6 +64,13 @@ export const gameSlice = createSlice({
         state.currentPiece.x += 1;
       }
     },
+
+    advancePiece: (state) => {
+      if (state.currentPiece.y < NUM_ROWS) {
+        state.currentPiece.y += 1;
+        state.lastAdvanceTime = Date.now();
+      }
+    },
   },
 });
 
@@ -71,6 +81,7 @@ export const {
   rotateRight,
   moveLeft,
   moveRight,
+  advancePiece,
 } = gameSlice.actions;
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
@@ -87,6 +98,18 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
       dispatch(moveLeft());
     } else if (keyCode === "ArrowRight") {
       dispatch(moveRight());
+    }
+  }
+};
+
+export const handleGameTick = () => (dispatch, getState) => {
+  const state = getState()
+  const currentStatus = selectGameStatus(state);
+  const { lastAdvanceTime, dropSpeed } = state.game;
+
+  if (currentStatus === GameStatuses.started) {
+    if (lastAdvanceTime !== null && Date.now() - lastAdvanceTime > dropSpeed) {
+      dispatch(advancePiece());
     }
   }
 };
