@@ -1,9 +1,7 @@
-import { NUM_COLUMNS } from '../constants';
-
 //   *
 //  ***
 const Piece0 = ({ piece }) => ({
-  render: () => {
+  offsets: () => {
     if (piece.rotation === 270) {
       return [
         [0, 1],

@@ -12,5 +12,11 @@ const PieceClasses = [
 
 export const PieceFactory = (piece) => {
   const PieceClass = PieceClasses[piece.type];
-  return PieceClass({ piece });
+
+  return {
+    ...PieceClass({ piece }),
+    x: piece.x,
+    y: piece.y,
+    rotation: piece.rotation,
+  };
 }

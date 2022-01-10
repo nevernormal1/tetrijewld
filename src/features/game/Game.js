@@ -39,7 +39,7 @@ const GameStopped = () => {
 }
 
 const Piece = ({ piece }) => {
-  const offsets = PieceFactory(piece).render();
+  const offsets = PieceFactory(piece).offsets();
 
   return (
     <div

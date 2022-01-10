@@ -19,13 +19,37 @@ const randomPiece = () => ({
   rotation: 0,
 })
 
-const roomForPiece = (piece) => {
+const pieceObjectsCollide = (pieceObj1, pieceObj2) => (
+  pieceObj1.offsets().some(offset1 => (
+    pieceObj2.offsets().some(offset2 => (
+      pieceObj1.x + offset1[0] === pieceObj2.x + offset2[0] &&
+        pieceObj1.y + offset1[1] === pieceObj2.y + offset2[1]
+    ))
+  ))
+);
+
+const roomForPiece = (piece, droppedPieces) => {
   const pieceObject = PieceFactory(piece);
 
-  const spaceOnRight = piece.x + pieceObject.width() <= NUM_COLUMNS
-  const spaceOnBottom = piece.y + pieceObject.height() <= NUM_ROWS
+  // Inside left boundary?
+  if (piece.x < 0) {
+    return false;
+  }
 
-  return spaceOnRight && spaceOnBottom;
+  // Inside right boundary?
+  if (piece.x + pieceObject.width() > NUM_COLUMNS) {
+    return false;
+  }
+
+  // Inside bottom boundary?
+  if (piece.y + pieceObject.height() > NUM_ROWS) {
+    return false;
+  }
+
+  // Collides with dropped pieces?
+  return !droppedPieces.some(droppedPiece => pieceObjectsCollide(
+    PieceFactory(droppedPiece), pieceObject)
+  );
 };
 
 export const gameSlice = createSlice({
@@ -44,10 +68,10 @@ export const gameSlice = createSlice({
 
       const rotatedPiece = {
         ...currentPiece,
-        rotation: (currentPiece.rotation + 270) % 360
+        rotation: (currentPiece.rotation + 270) % 360,
       };
 
-      if (roomForPiece(rotatedPiece)) {
+      if (roomForPiece(rotatedPiece, state.droppedPieces)) {
         state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
@@ -57,25 +81,37 @@ export const gameSlice = createSlice({
 
       const rotatedPiece = {
         ...currentPiece,
-        rotation: (currentPiece.rotation + 90) % 360
+        rotation: (currentPiece.rotation + 90) % 360,
       };
 
-      if (roomForPiece(rotatedPiece)) {
+      if (roomForPiece(rotatedPiece, state.droppedPieces)) {
         state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
 
     moveLeft: (state) => {
-      if (state.currentPiece.x > 0) {
-        state.currentPiece.x -= 1;
+      const currentPiece = state.currentPiece;
+
+      const movedPiece = {
+        ...currentPiece,
+        x: state.currentPiece.x - 1,
+      };
+
+      if (roomForPiece(movedPiece, state.droppedPieces)) {
+        state.currentPiece.x = movedPiece.x;
       }
     },
 
     moveRight: (state) => {
-      const piece = PieceFactory(state.currentPiece)
+      const currentPiece = state.currentPiece;
 
-      if (state.currentPiece.x < NUM_COLUMNS - piece.width()) {
-        state.currentPiece.x += 1;
+      const movedPiece = {
+        ...currentPiece,
+        x: state.currentPiece.x + 1,
+      };
+
+      if (roomForPiece(movedPiece, state.droppedPieces)) {
+        state.currentPiece.x = movedPiece.x;
       }
     },
 
@@ -87,16 +123,14 @@ export const gameSlice = createSlice({
         y: currentPiece.y + 1
       };
 
-      const advancedPieceObject = PieceFactory(advancedPiece);
-
-      if (advancedPiece.y + advancedPieceObject.height() <= NUM_ROWS) {
+      if (roomForPiece(advancedPiece, state.droppedPieces)) {
         state.currentPiece.y = advancedPiece.y;
-        state.lastAdvanceTime = Date.now();
       } else {
         state.droppedPieces.push(state.currentPiece);
-        // Introduce new piece
         state.currentPiece = randomPiece();
       }
+
+      state.lastAdvanceTime = Date.now();
     },
   },
 });

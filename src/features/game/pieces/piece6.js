@@ -1,7 +1,7 @@
 //    **
 //    **
 const Piece6 = ({ piece }) => ({
-  render: () => {
+  offsets: () => {
     return [
       [0, 0],
       [1, 0],
