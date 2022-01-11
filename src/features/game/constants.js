@@ -5,5 +5,6 @@ export const NUM_COLUMNS = 10;
 export const GameStatuses = {
   stopped: 'stopped',
   started: 'started',
+  over: 'over',
 }
 

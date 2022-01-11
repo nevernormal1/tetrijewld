@@ -38,6 +38,14 @@ const GameStopped = () => {
   );
 }
 
+const GameOver = () => {
+  return (
+    <div className="instructions">
+      <p>Game over!</p>
+    </div>
+  );
+}
+
 const Piece = ({ piece }) => {
   const offsets = PieceFactory(piece).offsets();
 
@@ -83,6 +91,10 @@ const Game = () => {
     <div id="game">
       { gameStatus === GameStatuses.stopped &&
         <GameStopped /> }
+
+      { gameStatus === GameStatuses.over &&
+        <GameOver /> }
+
       <CurrentPiece />
       <DroppedPieces />
     </div>

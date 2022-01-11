@@ -4,6 +4,7 @@ import { PieceFactory } from './pieces/pieces';
 import { GameStatuses, NUM_ROWS, NUM_COLUMNS } from './constants';
 
 const initialState = {
+  timerID: null,
   currentPiece: null,
   lastAdvanceTime: null,
   dropSpeed: 1000,
@@ -56,11 +57,14 @@ export const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    startGame: (state) => {
-      state.status = GameStatuses.started;
-      state.droppedPieces = [];
-      state.currentPiece = randomPiece();
-      state.lastAdvanceTime = Date.now();
+    startGame: (state, action) => {
+      if (state.status === GameStatuses.stopped) {
+        state.timerID = action.payload;
+        state.status = GameStatuses.started;
+        state.droppedPieces = [];
+        state.currentPiece = randomPiece();
+        state.lastAdvanceTime = Date.now();
+      }
     },
 
     rotateLeft: (state) => {
@@ -126,8 +130,15 @@ export const gameSlice = createSlice({
       if (roomForPiece(advancedPiece, state.droppedPieces)) {
         state.currentPiece.y = advancedPiece.y;
       } else {
-        state.droppedPieces.push(state.currentPiece);
-        state.currentPiece = randomPiece();
+        if (currentPiece.y === 0) {
+          // End game
+          state.status = GameStatuses.over;
+          window.clearInterval(state.timerID);
+          state.timerID = null;
+        } else {
+          state.droppedPieces.push(state.currentPiece);
+          state.currentPiece = randomPiece();
+        }
       }
 
       state.lastAdvanceTime = Date.now();
