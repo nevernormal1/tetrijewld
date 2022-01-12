@@ -53,6 +53,19 @@ const roomForPiece = (piece, droppedPieces) => {
   );
 };
 
+const doDropPiece = (piece, state) => {
+  if (piece.y === 0) {
+    // End game
+    state.status = GameStatuses.over;
+    window.clearInterval(state.timerID);
+    state.timerID = null;
+  } else {
+    // Drop piece & introduce new piece
+    state.droppedPieces.push(piece);
+    state.currentPiece = randomPiece();
+  }
+}
+
 export const gameSlice = createSlice({
   name: 'game',
   initialState,
@@ -131,7 +144,9 @@ export const gameSlice = createSlice({
         advancedPiece.y = advancedPiece.y + 1;
       }
 
-      state.currentPiece.y = advancedPiece.y - 1;
+      advancedPiece.y = advancedPiece.y - 1;
+
+      doDropPiece(advancedPiece, state);
     },
 
     advancePiece: (state) => {
@@ -145,15 +160,7 @@ export const gameSlice = createSlice({
       if (roomForPiece(advancedPiece, state.droppedPieces)) {
         state.currentPiece.y = advancedPiece.y;
       } else {
-        if (currentPiece.y === 0) {
-          // End game
-          state.status = GameStatuses.over;
-          window.clearInterval(state.timerID);
-          state.timerID = null;
-        } else {
-          state.droppedPieces.push(state.currentPiece);
-          state.currentPiece = randomPiece();
-        }
+        doDropPiece(currentPiece, state);
       }
 
       state.lastAdvanceTime = Date.now();
