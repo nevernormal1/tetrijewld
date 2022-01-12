@@ -119,6 +119,21 @@ export const gameSlice = createSlice({
       }
     },
 
+    dropPiece: (state) => {
+      const currentPiece = state.currentPiece;
+
+      let advancedPiece = {
+        ...currentPiece,
+        y: currentPiece.y + 1
+      };
+
+      while (roomForPiece(advancedPiece, state.droppedPieces)) {
+        advancedPiece.y = advancedPiece.y + 1;
+      }
+
+      state.currentPiece.y = advancedPiece.y - 1;
+    },
+
     advancePiece: (state) => {
       const currentPiece = state.currentPiece;
 
@@ -148,12 +163,12 @@ export const gameSlice = createSlice({
 
 export const {
   startGame,
-  introducePiece,
   rotateLeft,
   rotateRight,
   moveLeft,
   moveRight,
   advancePiece,
+  dropPiece,
 } = gameSlice.actions;
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
@@ -170,6 +185,8 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
       dispatch(moveLeft());
     } else if (keyCode === "ArrowRight") {
       dispatch(moveRight());
+    } else if (keyCode === "Space") {
+      dispatch(dropPiece());
     }
   }
 };

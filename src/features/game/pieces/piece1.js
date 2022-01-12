@@ -1,5 +1,3 @@
-import { NUM_COLUMNS } from '../constants';
-
 //   **
 //  **
 const Piece1 = ({ piece }) => ({
@@ -20,6 +18,7 @@ const Piece1 = ({ piece }) => ({
       [1, 1],
     ];
   },
+
   width: () => {
     return piece.rotation === 270 || piece.rotation === 90 ? 2 : 3;
   },
