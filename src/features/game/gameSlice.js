@@ -12,12 +12,23 @@ const initialState = {
   droppedPieces: [],
 };
 
+const COLORS = [
+  "yellow", "green", "blue",
+  "purple", "orange", "silver",
+  "red"
+]
+
+const randomColor = () => (
+  COLORS[Math.floor(Math.random() * 7)]
+)
+
 const randomPiece = () => ({
   id: Date.now(),
   type: Math.floor(Math.random() * 7),
   x: 4,
   y: 0,
   rotation: 0,
+  colors: Array(4).fill(0).map(randomColor)
 })
 
 const pieceObjectsCollide = (pieceObj1, pieceObj2) => (
@@ -57,7 +68,7 @@ const doDropPiece = (piece, state) => {
   if (piece.y === 0) {
     // End game
     state.status = GameStatuses.over;
-    window.clearInterval(state.timerID);
+    //window.clearInterval(state.timerID);
     state.timerID = null;
   } else {
     // Drop piece & introduce new piece
@@ -71,13 +82,11 @@ export const gameSlice = createSlice({
   initialState,
   reducers: {
     startGame: (state, action) => {
-      if (state.status === GameStatuses.stopped) {
-        state.timerID = action.payload;
-        state.status = GameStatuses.started;
-        state.droppedPieces = [];
-        state.currentPiece = randomPiece();
-        state.lastAdvanceTime = Date.now();
-      }
+      state.timerID = action.payload;
+      state.status = GameStatuses.started;
+      state.droppedPieces = [];
+      state.currentPiece = randomPiece();
+      state.lastAdvanceTime = Date.now();
     },
 
     rotateLeft: (state) => {
@@ -181,7 +190,7 @@ export const {
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
   const currentStatus = selectGameStatus(getState());
 
-  if (currentStatus === GameStatuses.stopped) {
+  if (currentStatus === GameStatuses.stopped || currentStatus === GameStatuses.over) {
     dispatch(startGame());
   } else {
     if (keyCode === "KeyZ") {

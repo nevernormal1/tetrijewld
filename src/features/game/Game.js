@@ -60,7 +60,7 @@ const Piece = ({ piece }) => {
           return (
             <div
               key={`${ piece.id }:${ index }`}
-              className="piece-cell"
+              className={ `piece-cell ${ piece.colors[index] }` }
               style={{ left: `${ offset[0] * PIECE_CELL_SIZE }px`, top: `${ offset[1] * PIECE_CELL_SIZE }px` }}
             />
           );
