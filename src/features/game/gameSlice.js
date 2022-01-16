@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
-import { PieceFactory, pieceCells } from './pieces/pieces';
-import { GameStatuses, NUM_ROWS, NUM_COLUMNS, COLORS, ACCELERATION_FACTOR } from './constants';
+import { pieceCells, randomPiece, roomForPiece } from './pieces/pieces';
+import { GameStatuses, ACCELERATION_FACTOR } from './constants';
 
 const initialState = {
   timerID: null,
@@ -11,53 +11,6 @@ const initialState = {
   dropSpeedAccelerated: false,
   status: GameStatuses.stopped,
   affixedCells: [],
-};
-
-const randomColor = () => (
-  COLORS[Math.floor(Math.random() * 7)]
-)
-
-const randomPiece = () => ({
-  id: Date.now(),
-  type: Math.floor(Math.random() * 7),
-  x: 4,
-  y: 0,
-  rotation: 0,
-  colors: Array(4).fill(0).map(randomColor)
-})
-
-const insideLeftBoundary = (pieceObj) => (
-  pieceObj.offsets().every(offset => (
-    pieceObj.x + offset[0] >= 0
-  ))
-);
-
-const insideRightBoundary = (pieceObj) => (
-  pieceObj.offsets().every(offset => (
-    pieceObj.x + offset[0] < NUM_COLUMNS
-  ))
-);
-
-const insideBottomBoundary = (pieceObj) => (
-  pieceObj.y + pieceObj.height() <= NUM_ROWS
-);
-
-const collidesWithCell = (pieceObj, cell) => (
-  pieceObj.offsets().some(offset => (
-    pieceObj.x + offset[0] === cell.x &&
-      pieceObj.y + offset[1] === cell.y
-  ))
-);
-
-const collidesWithCells = (pieceObj, cells) => (
-  cells.some(cell => collidesWithCell(pieceObj, cell))
-)
-
-const roomForPiece = (piece, affixedCells) => {
-  const pieceObj = PieceFactory(piece);
-
-  return insideLeftBoundary(pieceObj) && insideRightBoundary(pieceObj) &&
-    insideBottomBoundary(pieceObj) && !collidesWithCells(pieceObj, affixedCells);
 };
 
 const affixPiece = (piece, state) => {
