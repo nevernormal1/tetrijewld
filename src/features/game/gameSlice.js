@@ -1,9 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
 import { PieceFactory, pieceCells } from './pieces/pieces';
-import { GameStatuses, NUM_ROWS, NUM_COLUMNS } from './constants';
-
-const ACCELERATION_FACTOR = 0.9;
+import { GameStatuses, NUM_ROWS, NUM_COLUMNS, COLORS, ACCELERATION_FACTOR } from './constants';
 
 const initialState = {
   timerID: null,
@@ -14,12 +12,6 @@ const initialState = {
   status: GameStatuses.stopped,
   affixedCells: [],
 };
-
-const COLORS = [
-  "yellow", "green", "blue",
-  "purple", "orange", "silver",
-  "red"
-]
 
 const randomColor = () => (
   COLORS[Math.floor(Math.random() * 7)]

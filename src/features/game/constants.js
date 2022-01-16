@@ -6,5 +6,13 @@ export const GameStatuses = {
   stopped: 'stopped',
   started: 'started',
   over: 'over',
-}
+};
+
+export const COLORS = [
+  "yellow", "green", "blue",
+  "purple", "orange", "silver",
+  "red",
+];
+
+export const ACCELERATION_FACTOR = 0.9;
 
