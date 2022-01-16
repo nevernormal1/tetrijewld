@@ -64,7 +64,7 @@ const roomForPiece = (piece, droppedPieces) => {
   );
 };
 
-const doDropPiece = (piece, state) => {
+const affixPiece = (piece, state) => {
   if (piece.y === 0) {
     // End game
     state.status = GameStatuses.over;
@@ -155,24 +155,24 @@ export const gameSlice = createSlice({
 
       advancedPiece.y = advancedPiece.y - 1;
 
-      doDropPiece(advancedPiece, state);
+      affixPiece(advancedPiece, state);
     },
 
     advancePiece: (state) => {
-      //const currentPiece = state.currentPiece;
+      const currentPiece = state.currentPiece;
 
-      //const advancedPiece = {
-      //  ...currentPiece,
-      //  y: currentPiece.y + 1
-      //};
+      const advancedPiece = {
+        ...currentPiece,
+        y: currentPiece.y + 1
+      };
 
-      //if (roomForPiece(advancedPiece, state.droppedPieces)) {
-      //  state.currentPiece.y = advancedPiece.y;
-      //} else {
-      //  doDropPiece(currentPiece, state);
-      //}
+      if (roomForPiece(advancedPiece, state.droppedPieces)) {
+        state.currentPiece.y = advancedPiece.y;
+      } else {
+        affixPiece(currentPiece, state);
+      }
 
-      //state.lastAdvanceTime = Date.now();
+      state.lastAdvanceTime = Date.now();
     },
   },
 });

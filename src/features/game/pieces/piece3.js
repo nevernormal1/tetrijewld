@@ -6,10 +6,10 @@ const Piece3 = ({ piece }) => ({
   offsets: () => {
     if (piece.rotation === 0) {
       return [
-        [1, 0],
-        [1, 1],
-        [1, 2],
-        [1, 3],
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [0, 3],
       ];
     } else if (piece.rotation === 90) {
       return [
@@ -20,10 +20,10 @@ const Piece3 = ({ piece }) => ({
       ];
     } else if (piece.rotation === 180) {
       return [
-        [1, 3],
-        [1, 2],
-        [1, 1],
-        [1, 0],
+        [0, 3],
+        [0, 2],
+        [0, 1],
+        [0, 0],
       ];
     } else if (piece.rotation === 270) {
       return [
