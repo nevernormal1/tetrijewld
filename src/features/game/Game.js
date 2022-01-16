@@ -7,7 +7,7 @@ import {
   selectAffixedCells,
 } from './gameSelectors';
 import { useSelector } from 'react-redux';
-import { PieceFactory } from './pieces/pieces';
+import { PieceFactory, pieceCells } from './pieces/pieces';
 
 const GameStopped = () => {
   return (
@@ -56,15 +56,7 @@ const Cell = ({ cell }) => {
 }
 
 const Piece = ({ piece }) => {
-  const pieceObj = PieceFactory(piece);
-  const cells = pieceObj.offsets().map((offset, index) => ({
-    id: piece.id + index,
-    x: pieceObj.x + offset[0],
-    y: pieceObj.y + offset[1],
-    color: piece.colors[index],
-  }));
-
-  return cells.map(cell => <Cell cell={ cell } />);
+  return pieceCells(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
 }
 
 const AffixedCells = () => {

@@ -20,3 +20,14 @@ export const PieceFactory = (piece) => {
     rotation: piece.rotation,
   };
 }
+
+export const pieceCells = (piece) => {
+  const pieceObj = PieceFactory(piece);
+
+  return pieceObj.offsets().map((offset, index) => ({
+    id: piece.id + index,
+    x: piece.x + offset[0],
+    y: piece.y + offset[1],
+    color: piece.colors[index],
+  }));
+}

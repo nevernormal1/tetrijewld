@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
-import { PieceFactory } from './pieces/pieces';
+import { PieceFactory, pieceCells } from './pieces/pieces';
 import { GameStatuses, NUM_ROWS, NUM_COLUMNS } from './constants';
 
 const ACCELERATION_FACTOR = 0.9;
@@ -81,15 +81,10 @@ const affixPiece = (piece, state) => {
     state.timerID = null;
   } else {
     // Drop piece & introduce new piece
-    const pieceObject = PieceFactory(piece);
-    pieceObject.offsets().forEach((offset, index) => {
-      state.affixedCells.push({
-        id: piece.id + index,
-        x: piece.x + offset[0],
-        y: piece.y + offset[1],
-        color: piece.colors[index],
-      });
-    })
+    state.affixedCells = [
+      ...state.affixedCells,
+      ...pieceCells(piece),
+    ];
 
     state.currentPiece = randomPiece();
   }
