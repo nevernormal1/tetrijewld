@@ -3,11 +3,14 @@ import { selectGameStatus } from './gameSelectors';
 import { PieceFactory } from './pieces/pieces';
 import { GameStatuses, NUM_ROWS, NUM_COLUMNS } from './constants';
 
+const ACCELERATION_FACTOR = 0.9;
+
 const initialState = {
   timerID: null,
   currentPiece: null,
   lastAdvanceTime: null,
   dropSpeed: 1000,
+  dropSpeedAccelerated: false,
   status: GameStatuses.stopped,
   droppedPieces: [],
 };
@@ -87,6 +90,14 @@ export const gameSlice = createSlice({
       state.droppedPieces = [];
       state.currentPiece = randomPiece();
       state.lastAdvanceTime = Date.now();
+    },
+
+    accelerateDropSpeed: (state) => {
+      state.dropSpeedAccelerated = true;
+    },
+
+    decelerateDropSpeed: (state) => {
+      state.dropSpeedAccelerated = false;
     },
 
     rotateLeft: (state) => {
@@ -184,6 +195,8 @@ export const {
   moveLeft,
   moveRight,
   advancePiece,
+  accelerateDropSpeed,
+  decelerateDropSpeed,
   dropPiece,
 } = gameSlice.actions;
 
@@ -201,19 +214,31 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
       dispatch(moveLeft());
     } else if (keyCode === "ArrowRight") {
       dispatch(moveRight());
+    } else if (keyCode === "ArrowDown") {
+      dispatch(accelerateDropSpeed());
     } else if (keyCode === "Space") {
       dispatch(dropPiece());
     }
   }
 };
 
+export const handleKeyup = (keyCode) => (dispatch, getState) => {
+  if (keyCode === "ArrowDown") {
+    dispatch(decelerateDropSpeed());
+  }
+};
+
 export const handleGameTick = () => (dispatch, getState) => {
   const state = getState()
   const currentStatus = selectGameStatus(state);
-  const { lastAdvanceTime, dropSpeed } = state.game;
+  const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated } = state.game;
 
-  if (currentStatus === GameStatuses.started) {
-    if (lastAdvanceTime !== null && Date.now() - lastAdvanceTime > dropSpeed) {
+  if (currentStatus === GameStatuses.started && lastAdvanceTime !== null) {
+    const compareTime = dropSpeedAccelerated ?
+      dropSpeed - dropSpeed * ACCELERATION_FACTOR :
+      dropSpeed;
+
+    if (Date.now() - lastAdvanceTime > compareTime) {
       dispatch(advancePiece());
     }
   }

@@ -6,6 +6,7 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import {
   handleKeydown,
+  handleKeyup,
   handleGameTick,
 } from './features/game/gameSlice';
 
@@ -26,6 +27,13 @@ const onKeydown = (event) => {
 }
 
 document.addEventListener('keydown', onKeydown);
+
+const onKeyup = (event) => {
+  event.preventDefault();
+  store.dispatch(handleKeyup(event.code));
+}
+
+document.addEventListener('keyup', onKeyup);
 
 // Start event loop
 window.setInterval(() => {
