@@ -12,20 +12,20 @@ const Piece2 = ({ piece }) => ({
     } else if (piece.rotation === 90) {
       return [
         [1, 0],
-        [0, 1],
         [1, 1],
-        [1, 0],
+        [0, 1],
+        [0, 2],
       ];
     } else if (piece.rotation === 180) {
       return [
-        [1, 0],
-        [0, 1],
+        [2, 1],
         [1, 1],
         [1, 0],
+        [0, 0],
       ];
     } else if (piece.rotation === 270) {
       return [
-        [1, 0],
+        [0, 2],
         [0, 1],
         [1, 1],
         [1, 0],
