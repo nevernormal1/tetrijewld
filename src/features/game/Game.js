@@ -4,7 +4,7 @@ import { GameStatuses, PIECE_CELL_SIZE } from './constants';
 import {
   selectGameStatus,
   selectCurrentPiece,
-  selectDroppedPieces,
+  selectAffixedCells,
 } from './gameSelectors';
 import { useSelector } from 'react-redux';
 import { PieceFactory } from './pieces/pieces';
@@ -46,35 +46,32 @@ const GameOver = () => {
   );
 }
 
-const Piece = ({ piece }) => {
-  const offsets = PieceFactory(piece).offsets();
-
+const Cell = ({ cell }) => {
   return (
     <div
-      key={ piece.id }
-      className="piece-container"
-      style={ { left: `${ piece.x * PIECE_CELL_SIZE }px`, top: `${ piece.y * PIECE_CELL_SIZE }px` } }
-    >
-      {
-        offsets.map((offset, index) => {
-          return (
-            <div
-              key={`${ piece.id }:${ index }`}
-              className={ `piece-cell ${ piece.colors[index] }` }
-              style={{ left: `${ offset[0] * PIECE_CELL_SIZE }px`, top: `${ offset[1] * PIECE_CELL_SIZE }px` }}
-            />
-          );
-        })
-      }
-    </div>
+      className={ `piece-cell ${ cell.color }` }
+      style={{ left: `${ cell.x * PIECE_CELL_SIZE }px`, top: `${ cell.y * PIECE_CELL_SIZE }px` }}
+    />
   )
 }
 
-const DroppedPieces = () => {
-  const pieces = useSelector(selectDroppedPieces);
+const Piece = ({ piece }) => {
+  const pieceObj = PieceFactory(piece);
+  const cells = pieceObj.offsets().map((offset, index) => ({
+    id: piece.id + index,
+    x: pieceObj.x + offset[0],
+    y: pieceObj.y + offset[1],
+    color: piece.colors[index],
+  }));
 
-  return pieces.map(piece => (
-    <Piece key={ piece.id } piece={ piece } />
+  return cells.map(cell => <Cell cell={ cell } />);
+}
+
+const AffixedCells = () => {
+  const cells = useSelector(selectAffixedCells);
+
+  return cells.map(cell => (
+    <Cell key={ cell.id } cell={ cell } />
   ))
 };
 
@@ -96,7 +93,7 @@ const Game = () => {
         <GameOver /> }
 
       <CurrentPiece />
-      <DroppedPieces />
+      <AffixedCells />
     </div>
   );
 }

@@ -12,13 +12,13 @@ const selectCurrentPiece = createSelector(
   (state) => state.currentPiece
 );
 
-const selectDroppedPieces = createSelector(
+const selectAffixedCells = createSelector(
   gameState,
-  (state) => state.droppedPieces
+  (state) => state.affixedCells
 );
 
 export {
   selectGameStatus,
   selectCurrentPiece,
-  selectDroppedPieces,
+  selectAffixedCells,
 };

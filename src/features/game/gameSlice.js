@@ -12,7 +12,7 @@ const initialState = {
   dropSpeed: 1000,
   dropSpeedAccelerated: false,
   status: GameStatuses.stopped,
-  droppedPieces: [],
+  affixedCells: [],
 };
 
 const COLORS = [
@@ -34,25 +34,31 @@ const randomPiece = () => ({
   colors: Array(4).fill(0).map(randomColor)
 })
 
-const pieceObjectsCollide = (pieceObj1, pieceObj2) => (
-  pieceObj1.offsets().some(offset1 => (
-    pieceObj2.offsets().some(offset2 => (
-      pieceObj1.x + offset1[0] === pieceObj2.x + offset2[0] &&
-        pieceObj1.y + offset1[1] === pieceObj2.y + offset2[1]
-    ))
+const pieceObjectsCollide = (affixedCell, pieceObj) => (
+  pieceObj.offsets().some(offset => (
+    pieceObj.x + offset[0] === affixedCell.x &&
+      pieceObj.y + offset[1] === affixedCell.y
   ))
 );
 
-const roomForPiece = (piece, droppedPieces) => {
+const roomForPiece = (piece, affixedCells) => {
   const pieceObject = PieceFactory(piece);
 
   // Inside left boundary?
-  if (piece.x < 0) {
+  const outsideLeftBoundary = pieceObject.offsets().some(offset => (
+    piece.x + offset[0] < 0
+  ))
+
+  if (outsideLeftBoundary) {
     return false;
   }
 
   // Inside right boundary?
-  if (piece.x + pieceObject.width() > NUM_COLUMNS) {
+  const outsideRightBoundary = pieceObject.offsets().some(offset => (
+    piece.x + offset[0] >= NUM_COLUMNS
+  ))
+
+  if (outsideRightBoundary) {
     return false;
   }
 
@@ -62,8 +68,8 @@ const roomForPiece = (piece, droppedPieces) => {
   }
 
   // Collides with dropped pieces?
-  return !droppedPieces.some(droppedPiece => pieceObjectsCollide(
-    PieceFactory(droppedPiece), pieceObject)
+  return !affixedCells.some(affixedCell => pieceObjectsCollide(
+    affixedCell, pieceObject)
   );
 };
 
@@ -75,7 +81,16 @@ const affixPiece = (piece, state) => {
     state.timerID = null;
   } else {
     // Drop piece & introduce new piece
-    state.droppedPieces.push(piece);
+    const pieceObject = PieceFactory(piece);
+    pieceObject.offsets().forEach((offset, index) => {
+      state.affixedCells.push({
+        id: piece.id + index,
+        x: piece.x + offset[0],
+        y: piece.y + offset[1],
+        color: piece.colors[index],
+      });
+    })
+
     state.currentPiece = randomPiece();
   }
 }
@@ -87,7 +102,7 @@ export const gameSlice = createSlice({
     startGame: (state, action) => {
       state.timerID = action.payload;
       state.status = GameStatuses.started;
-      state.droppedPieces = [];
+      state.affixedCells = [];
       state.currentPiece = randomPiece();
       state.lastAdvanceTime = Date.now();
     },
@@ -108,7 +123,7 @@ export const gameSlice = createSlice({
         rotation: (currentPiece.rotation + 270) % 360,
       };
 
-      if (roomForPiece(rotatedPiece, state.droppedPieces)) {
+      if (roomForPiece(rotatedPiece, state.affixedCells)) {
         state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
@@ -121,7 +136,7 @@ export const gameSlice = createSlice({
         rotation: (currentPiece.rotation + 90) % 360,
       };
 
-      if (roomForPiece(rotatedPiece, state.droppedPieces)) {
+      if (roomForPiece(rotatedPiece, state.affixedCells)) {
         state.currentPiece.rotation = rotatedPiece.rotation;
       }
     },
@@ -134,7 +149,7 @@ export const gameSlice = createSlice({
         x: state.currentPiece.x - 1,
       };
 
-      if (roomForPiece(movedPiece, state.droppedPieces)) {
+      if (roomForPiece(movedPiece, state.affixedCells)) {
         state.currentPiece.x = movedPiece.x;
       }
     },
@@ -147,7 +162,7 @@ export const gameSlice = createSlice({
         x: state.currentPiece.x + 1,
       };
 
-      if (roomForPiece(movedPiece, state.droppedPieces)) {
+      if (roomForPiece(movedPiece, state.affixedCells)) {
         state.currentPiece.x = movedPiece.x;
       }
     },
@@ -160,7 +175,7 @@ export const gameSlice = createSlice({
         y: currentPiece.y + 1
       };
 
-      while (roomForPiece(advancedPiece, state.droppedPieces)) {
+      while (roomForPiece(advancedPiece, state.affixedCells)) {
         advancedPiece.y = advancedPiece.y + 1;
       }
 
@@ -177,7 +192,7 @@ export const gameSlice = createSlice({
         y: currentPiece.y + 1
       };
 
-      if (roomForPiece(advancedPiece, state.droppedPieces)) {
+      if (roomForPiece(advancedPiece, state.affixedCells)) {
         state.currentPiece.y = advancedPiece.y;
       } else {
         affixPiece(currentPiece, state);
