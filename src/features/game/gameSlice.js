@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
 import { pieceCells, randomPiece, roomForPiece } from './pieces/pieces';
-import { GameStatuses, ACCELERATION_FACTOR } from './constants';
+import { GameStatuses, ACCELERATION_FACTOR, NUM_ROWS, NUM_COLUMNS } from './constants';
 
 const initialState = {
   timerID: null,
@@ -10,8 +10,75 @@ const initialState = {
   dropSpeed: 1000,
   dropSpeedAccelerated: false,
   status: GameStatuses.stopped,
+  removingCells: false,
   affixedCells: [],
 };
+
+const cellsToRemove = (cells) => {
+  const rows = [];
+  const cols = [];
+
+  cells.forEach(cell => {
+    rows[cell.y] ||= [];
+    rows[cell.y][cell.x] = cell.color;
+
+    cols[cell.x] ||= [];
+    cols[cell.x][cell.y] = cell.color;
+  })
+
+  const cellsInRow = rows.some((row, index) => {
+    let count = 0;
+    let lastColor = null;
+    for(let i=0; i<NUM_COLUMNS; i++) {
+      if (row[i]) {
+        if (row[i] === lastColor) {
+          if (count >= 2) {
+            console.log("Cells to remove in row:", index);
+            return true;
+          }
+          count += 1;
+        } else {
+          count = 1;
+          lastColor = row[i];
+        }
+      } else {
+        count = 0;
+        lastColor = null;
+      }
+    }
+
+    return false;
+  });
+
+  if (cellsInRow) {
+    return true;
+  }
+
+  return cols.some((col, index) => {
+    let count = 0;
+    let lastColor = null;
+
+    for(let i=0; i<NUM_ROWS; i++) {
+      if (col[i]) {
+        if (col[i] === lastColor) {
+          if (count >= 2) {
+            console.log("Cells to remove in column:", index);
+            return true;
+          }
+          count += 1;
+        } else {
+          count = 1;
+          lastColor = col[i];
+        }
+      } else {
+        count = 0;
+        lastColor = null;
+      }
+    }
+
+    return false;
+  });
+}
 
 const affixPiece = (piece, state) => {
   if (piece.y === 0) {
@@ -25,7 +92,12 @@ const affixPiece = (piece, state) => {
       ...pieceCells(piece),
     ];
 
-    state.currentPiece = randomPiece();
+    if (cellsToRemove(state.affixedCells)) {
+      state.currentPiece = null;
+      state.removingCells = true;
+    } else {
+      state.currentPiece = randomPiece();
+    }
   }
 }
 
@@ -180,9 +252,10 @@ export const handleKeyup = (keyCode) => (dispatch, getState) => {
 export const handleGameTick = () => (dispatch, getState) => {
   const state = getState()
   const currentStatus = selectGameStatus(state);
-  const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated } = state.game;
+  const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated, removingCells } = state.game;
 
-  if (currentStatus === GameStatuses.started && lastAdvanceTime !== null) {
+  if (removingCells) {
+  } else if (currentStatus === GameStatuses.started && lastAdvanceTime !== null) {
     const compareTime = dropSpeedAccelerated ?
       dropSpeed - dropSpeed * ACCELERATION_FACTOR :
       dropSpeed;
