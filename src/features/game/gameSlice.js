@@ -17,7 +17,6 @@ const affixPiece = (piece, state) => {
   if (piece.y === 0) {
     // End game
     state.status = GameStatuses.over;
-    //window.clearInterval(state.timerID);
     state.timerID = null;
   } else {
     // Drop piece & introduce new piece
@@ -111,10 +110,10 @@ export const gameSlice = createSlice({
       };
 
       while (roomForPiece(advancedPiece, state.affixedCells)) {
-        advancedPiece.y = advancedPiece.y + 1;
+        advancedPiece.y +=1;
       }
 
-      advancedPiece.y = advancedPiece.y - 1;
+      advancedPiece.y -= 1;
 
       affixPiece(advancedPiece, state);
     },
