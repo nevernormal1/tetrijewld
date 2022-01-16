@@ -7,36 +7,8 @@ import {
   selectAffixedCells,
 } from './gameSelectors';
 import { useSelector } from 'react-redux';
-import { PieceFactory, pieceCells } from './pieces/pieces';
-
-const GameStopped = () => {
-  return (
-    <div className="instructions">
-      <table>
-        <tbody>
-          <tr>
-            <td><code>Z</code></td>
-            <td>Rotate Left</td>
-          </tr>
-          <tr>
-            <td><code>&uarr;</code></td>
-            <td>Rotate Right</td>
-          </tr>
-          <tr>
-            <td><code>&larr;</code></td>
-            <td>Move Left</td>
-          </tr>
-          <tr>
-            <td><code>&rarr;</code></td>
-            <td>Move Left</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>Press any key to start</p>
-    </div>
-  );
-}
+import { pieceCells } from './pieces/pieces';
+import GameStopped from './GameStopped';
 
 const GameOver = () => {
   return (
@@ -55,10 +27,6 @@ const Cell = ({ cell }) => {
   )
 }
 
-const Piece = ({ piece }) => {
-  return pieceCells(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
-}
-
 const AffixedCells = () => {
   const cells = useSelector(selectAffixedCells);
 
@@ -70,7 +38,11 @@ const AffixedCells = () => {
 const CurrentPiece = () => {
   const piece = useSelector(selectCurrentPiece);
 
-  return piece === null ? null : <Piece piece={ piece } />
+  if (piece === null) {
+    return null;
+  }
+
+  return pieceCells(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
 };
 
 const Game = () => {
