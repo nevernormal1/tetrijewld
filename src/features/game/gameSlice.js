@@ -26,43 +26,38 @@ const randomPiece = () => ({
   colors: Array(4).fill(0).map(randomColor)
 })
 
-const pieceObjectsCollide = (affixedCell, pieceObj) => (
-  pieceObj.offsets().some(offset => (
-    pieceObj.x + offset[0] === affixedCell.x &&
-      pieceObj.y + offset[1] === affixedCell.y
+const insideLeftBoundary = (pieceObj) => (
+  pieceObj.offsets().every(offset => (
+    pieceObj.x + offset[0] >= 0
   ))
 );
 
+const insideRightBoundary = (pieceObj) => (
+  pieceObj.offsets().every(offset => (
+    pieceObj.x + offset[0] < NUM_COLUMNS
+  ))
+);
+
+const insideBottomBoundary = (pieceObj) => (
+  pieceObj.y + pieceObj.height() <= NUM_ROWS
+);
+
+const collidesWithCell = (pieceObj, cell) => (
+  pieceObj.offsets().some(offset => (
+    pieceObj.x + offset[0] === cell.x &&
+      pieceObj.y + offset[1] === cell.y
+  ))
+);
+
+const collidesWithCells = (pieceObj, cells) => (
+  cells.some(cell => collidesWithCell(pieceObj, cell))
+)
+
 const roomForPiece = (piece, affixedCells) => {
-  const pieceObject = PieceFactory(piece);
+  const pieceObj = PieceFactory(piece);
 
-  // Inside left boundary?
-  const outsideLeftBoundary = pieceObject.offsets().some(offset => (
-    piece.x + offset[0] < 0
-  ))
-
-  if (outsideLeftBoundary) {
-    return false;
-  }
-
-  // Inside right boundary?
-  const outsideRightBoundary = pieceObject.offsets().some(offset => (
-    piece.x + offset[0] >= NUM_COLUMNS
-  ))
-
-  if (outsideRightBoundary) {
-    return false;
-  }
-
-  // Inside bottom boundary?
-  if (piece.y + pieceObject.height() > NUM_ROWS) {
-    return false;
-  }
-
-  // Collides with dropped pieces?
-  return !affixedCells.some(affixedCell => pieceObjectsCollide(
-    affixedCell, pieceObject)
-  );
+  return insideLeftBoundary(pieceObj) && insideRightBoundary(pieceObj) &&
+    insideBottomBoundary(pieceObj) && !collidesWithCells(pieceObj, affixedCells);
 };
 
 const affixPiece = (piece, state) => {
