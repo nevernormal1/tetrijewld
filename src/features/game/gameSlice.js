@@ -159,20 +159,20 @@ export const gameSlice = createSlice({
     },
 
     advancePiece: (state) => {
-      const currentPiece = state.currentPiece;
+      //const currentPiece = state.currentPiece;
 
-      const advancedPiece = {
-        ...currentPiece,
-        y: currentPiece.y + 1
-      };
+      //const advancedPiece = {
+      //  ...currentPiece,
+      //  y: currentPiece.y + 1
+      //};
 
-      if (roomForPiece(advancedPiece, state.droppedPieces)) {
-        state.currentPiece.y = advancedPiece.y;
-      } else {
-        doDropPiece(currentPiece, state);
-      }
+      //if (roomForPiece(advancedPiece, state.droppedPieces)) {
+      //  state.currentPiece.y = advancedPiece.y;
+      //} else {
+      //  doDropPiece(currentPiece, state);
+      //}
 
-      state.lastAdvanceTime = Date.now();
+      //state.lastAdvanceTime = Date.now();
     },
   },
 });
