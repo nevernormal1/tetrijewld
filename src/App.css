@@ -15,16 +15,18 @@
 
 }
 
-.piece-container, .piece-cell {
-  position: absolute;
-}
-
 .piece-cell {
+  position: absolute;
   width: var(--piece-cell-size);
   height: var(--piece-cell-size);
   background-color: #DDD;
   box-sizing: border-box;
   border: 4px solid #EEE;
+  transition: opacity 1s ease-out;
+}
+
+.piece-cell.matched {
+  opacity: 0;
 }
 
 #heading {

@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
-import { pieceCells, randomPiece, roomForPiece } from './pieces/pieces';
+import { cellsForPiece, randomPiece, roomForPiece } from './pieces/pieces';
 import { GameStatuses, ACCELERATION_FACTOR, NUM_ROWS, NUM_COLUMNS } from './constants';
 
 const initialState = {
@@ -14,70 +14,76 @@ const initialState = {
   affixedCells: [],
 };
 
-const cellsToRemove = (cells) => {
-  const rows = [];
-  const cols = [];
+const findMatchedCells = (pieceCells, affixedCells) => {
+  const ret = new Set();
 
-  cells.forEach(cell => {
-    rows[cell.y] ||= [];
-    rows[cell.y][cell.x] = cell.color;
+  const gridCells = new Array(NUM_COLUMNS);
 
-    cols[cell.x] ||= [];
-    cols[cell.x][cell.y] = cell.color;
-  })
+  affixedCells.forEach((affixedCell) => {
+    gridCells[affixedCell.x] ||= new Array(NUM_ROWS);
+    gridCells[affixedCell.x][affixedCell.y] = affixedCell;
+  });
 
-  const cellsInRow = rows.some((row, index) => {
-    let count = 0;
-    let lastColor = null;
-    for(let i=0; i<NUM_COLUMNS; i++) {
-      if (row[i]) {
-        if (row[i] === lastColor) {
-          if (count >= 2) {
-            console.log("Cells to remove in row:", index);
-            return true;
-          }
-          count += 1;
-        } else {
-          count = 1;
-          lastColor = row[i];
-        }
+  pieceCells.forEach(pieceCell => {
+    let gridCell = gridCells[pieceCell.x][pieceCell.y];
+
+    let cellsInRow = [gridCell];
+    let cellsInColumn = [gridCell];
+
+    const gridCellMatch = (gridCell) => (
+      gridCell && gridCell.color === pieceCell.color
+    );
+
+    for (let i=pieceCell.x - 1; i>= 0; i--) {
+      const gridColumn = gridCells[i];
+      gridCell = gridColumn && gridColumn[pieceCell.y];
+      if (gridCellMatch(gridCell)) {
+        cellsInRow.push(gridCell);
       } else {
-        count = 0;
-        lastColor = null;
+        break;
       }
     }
 
-    return false;
-  });
-
-  if (cellsInRow) {
-    return true;
-  }
-
-  return cols.some((col, index) => {
-    let count = 0;
-    let lastColor = null;
-
-    for(let i=0; i<NUM_ROWS; i++) {
-      if (col[i]) {
-        if (col[i] === lastColor) {
-          if (count >= 2) {
-            console.log("Cells to remove in column:", index);
-            return true;
-          }
-          count += 1;
-        } else {
-          count = 1;
-          lastColor = col[i];
-        }
+    for (let i=pieceCell.x + 1; i<NUM_COLUMNS; i++) {
+      const gridColumn = gridCells[i];
+      gridCell = gridColumn && gridColumn[pieceCell.y];
+      if (gridCellMatch(gridCell)) {
+        cellsInRow.push(gridCell);
       } else {
-        count = 0;
-        lastColor = null;
+        break;
       }
     }
 
-    return false;
+    for (let i=pieceCell.y - 1; i>= 0; i--) {
+      const gridColumn = gridCells[pieceCell.x];
+      gridCell = gridColumn && gridColumn[i];
+      if (gridCellMatch(gridCell)) {
+        cellsInColumn.push(gridCell);
+      } else  {
+        break;
+      }
+    }
+
+    for (let i=pieceCell.y + 1; i<NUM_ROWS; i++) {
+      const gridColumn = gridCells[pieceCell.x];
+      gridCell = gridColumn && gridColumn[i];
+      if (gridCellMatch(gridCell)) {
+        cellsInColumn.push(gridCell);
+      } else {
+        break;
+      }
+    }
+
+    if (cellsInRow.length >= 3) {
+      cellsInRow.forEach(cell => ret.add(cell));
+    }
+
+    if (cellsInColumn.length >= 3) {
+      cellsInColumn.forEach(cell => ret.add(cell));
+    }
   });
+
+  return [...ret];
 }
 
 const affixPiece = (piece, state) => {
@@ -86,14 +92,21 @@ const affixPiece = (piece, state) => {
     state.status = GameStatuses.over;
     state.timerID = null;
   } else {
+    const pieceCells = cellsForPiece(piece);
+
     // Drop piece & introduce new piece
     state.affixedCells = [
       ...state.affixedCells,
-      ...pieceCells(piece),
+      ...pieceCells,
     ];
 
-    if (cellsToRemove(state.affixedCells)) {
+    const matchedCells = findMatchedCells(pieceCells, state.affixedCells);
+
+    matchedCells.forEach(cell => cell.matched = true);
+
+    if (matchedCells.length > 0) {
       state.currentPiece = null;
+      state.matchedCells = matchedCells;
       state.removingCells = true;
     } else {
       state.currentPiece = randomPiece();
@@ -193,32 +206,63 @@ export const gameSlice = createSlice({
     advancePiece: (state) => {
       const currentPiece = state.currentPiece;
 
-      const advancedPiece = {
-        ...currentPiece,
-        y: currentPiece.y + 1
-      };
+      if (currentPiece !== null) {
+        const advancedPiece = {
+          ...currentPiece,
+          y: currentPiece.y + 1
+        };
 
-      if (roomForPiece(advancedPiece, state.affixedCells)) {
-        state.currentPiece.y = advancedPiece.y;
-      } else {
-        affixPiece(currentPiece, state);
+        if (roomForPiece(advancedPiece, state.affixedCells)) {
+          state.currentPiece.y = advancedPiece.y;
+        } else {
+          affixPiece(currentPiece, state);
+        }
+
+        state.lastAdvanceTime = Date.now();
       }
+    },
 
+    clearRemovingCells: (state) => {
+      state.removingCells = false;
+    },
+
+    removeCells: (state) => {
+      state.affixedCells = state.affixedCells.filter(ac => (
+        !state.matchedCells.some(mc => mc.x === ac.x && mc.y === ac.y)
+      ));
+
+      // Put matched cells with lesser y values before those with higher
+      // y values so that when we move cells downward, they can't pass
+      // a matched cell before it contributes a unit to its fall.
+      state.matchedCells.sort((a, b) => a.y - b.y);
+
+      state.matchedCells.forEach(mc => {
+        state.affixedCells.forEach(ac => {
+          if (ac.x === mc.x && ac.y < mc.y) {
+            ac.y += 1;
+          }
+        });
+      });
+
+      state.matchedCells = [];
+      state.currentPiece = randomPiece();
       state.lastAdvanceTime = Date.now();
     },
   },
 });
 
-export const {
-  startGame,
-  rotateLeft,
-  rotateRight,
-  moveLeft,
-  moveRight,
-  advancePiece,
+const {
   accelerateDropSpeed,
+  advancePiece,
+  clearRemovingCells,
   decelerateDropSpeed,
   dropPiece,
+  moveLeft,
+  moveRight,
+  removeCells,
+  rotateLeft,
+  rotateRight,
+  startGame,
 } = gameSlice.actions;
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
@@ -249,12 +293,19 @@ export const handleKeyup = (keyCode) => (dispatch, getState) => {
   }
 };
 
+
+const removeAndDropCells = () => (dispatch, getState) => {
+  dispatch(clearRemovingCells());
+  setTimeout(() => dispatch(removeCells()), 1000);
+};
+
 export const handleGameTick = () => (dispatch, getState) => {
   const state = getState()
   const currentStatus = selectGameStatus(state);
   const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated, removingCells } = state.game;
 
   if (removingCells) {
+    dispatch(removeAndDropCells());
   } else if (currentStatus === GameStatuses.started && lastAdvanceTime !== null) {
     const compareTime = dropSpeedAccelerated ?
       dropSpeed - dropSpeed * ACCELERATION_FACTOR :

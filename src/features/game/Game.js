@@ -7,7 +7,7 @@ import {
   selectAffixedCells,
 } from './gameSelectors';
 import { useSelector } from 'react-redux';
-import { pieceCells } from './pieces/pieces';
+import { cellsForPiece } from './pieces/pieces';
 import GameStopped from './GameStopped';
 
 const GameOver = () => {
@@ -19,10 +19,15 @@ const GameOver = () => {
 }
 
 const Cell = ({ cell }) => {
+  const style = {
+    left: `${ cell.x * PIECE_CELL_SIZE }px`,
+    top: `${ cell.y * PIECE_CELL_SIZE }px`,
+  }
+
   return (
     <div
-      className={ `piece-cell ${ cell.color }` }
-      style={{ left: `${ cell.x * PIECE_CELL_SIZE }px`, top: `${ cell.y * PIECE_CELL_SIZE }px` }}
+      className={ `piece-cell ${ cell.color } ${ cell.matched ? "matched" : "" }`}
+      style={ style }
     />
   )
 }
@@ -42,7 +47,7 @@ const CurrentPiece = () => {
     return null;
   }
 
-  return pieceCells(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
+  return cellsForPiece(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
 };
 
 const Game = () => {

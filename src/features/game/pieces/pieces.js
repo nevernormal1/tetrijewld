@@ -23,7 +23,7 @@ export const PieceFactory = (piece) => {
   };
 }
 
-export const pieceCells = (piece) => {
+export const cellsForPiece = (piece) => {
   const pieceObj = PieceFactory(piece);
 
   return pieceObj.offsets().map((offset, index) => ({
