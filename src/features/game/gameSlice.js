@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { selectGameStatus } from './gameSelectors';
 import { cellsForPiece, randomPiece, roomForPiece } from './pieces/pieces';
 import { GameStatuses, ACCELERATION_FACTOR, NUM_ROWS, NUM_COLUMNS } from './constants';
@@ -137,70 +137,80 @@ export const gameSlice = createSlice({
     rotateLeft: (state) => {
       const currentPiece = state.currentPiece;
 
-      const rotatedPiece = {
-        ...currentPiece,
-        rotation: (currentPiece.rotation + 270) % 360,
-      };
+      if (currentPiece !== null) {
+        const rotatedPiece = {
+          ...currentPiece,
+          rotation: (currentPiece.rotation + 270) % 360,
+        };
 
-      if (roomForPiece(rotatedPiece, state.affixedCells)) {
-        state.currentPiece.rotation = rotatedPiece.rotation;
+        if (roomForPiece(rotatedPiece, state.affixedCells)) {
+          state.currentPiece.rotation = rotatedPiece.rotation;
+        }
       }
     },
 
     rotateRight: (state) => {
       const currentPiece = state.currentPiece;
 
-      const rotatedPiece = {
-        ...currentPiece,
-        rotation: (currentPiece.rotation + 90) % 360,
-      };
+      if (currentPiece !== null) {
+        const rotatedPiece = {
+          ...currentPiece,
+          rotation: (currentPiece.rotation + 90) % 360,
+        };
 
-      if (roomForPiece(rotatedPiece, state.affixedCells)) {
-        state.currentPiece.rotation = rotatedPiece.rotation;
+        if (roomForPiece(rotatedPiece, state.affixedCells)) {
+          state.currentPiece.rotation = rotatedPiece.rotation;
+        }
       }
     },
 
     moveLeft: (state) => {
       const currentPiece = state.currentPiece;
 
-      const movedPiece = {
-        ...currentPiece,
-        x: state.currentPiece.x - 1,
-      };
+      if (currentPiece !== null) {
+        const movedPiece = {
+          ...currentPiece,
+          x: state.currentPiece.x - 1,
+        };
 
-      if (roomForPiece(movedPiece, state.affixedCells)) {
-        state.currentPiece.x = movedPiece.x;
+        if (roomForPiece(movedPiece, state.affixedCells)) {
+          state.currentPiece.x = movedPiece.x;
+        }
       }
     },
 
     moveRight: (state) => {
       const currentPiece = state.currentPiece;
 
-      const movedPiece = {
-        ...currentPiece,
-        x: state.currentPiece.x + 1,
-      };
+      if (currentPiece !== null) {
+        const movedPiece = {
+          ...currentPiece,
+          x: state.currentPiece.x + 1,
+        };
 
-      if (roomForPiece(movedPiece, state.affixedCells)) {
-        state.currentPiece.x = movedPiece.x;
+        if (roomForPiece(movedPiece, state.affixedCells)) {
+          state.currentPiece.x = movedPiece.x;
+        }
       }
     },
 
     dropPiece: (state) => {
       const currentPiece = state.currentPiece;
 
-      let advancedPiece = {
-        ...currentPiece,
-        y: currentPiece.y + 1
-      };
+      if (currentPiece !== null) {
+        let advancedPiece = {
+          ...currentPiece,
+          y: currentPiece.y + 1
+        };
 
-      while (roomForPiece(advancedPiece, state.affixedCells)) {
-        advancedPiece.y +=1;
+        while (roomForPiece(advancedPiece, state.affixedCells)) {
+          advancedPiece.y +=1;
+        }
+
+        advancedPiece.y -= 1;
+
+        affixPiece(advancedPiece, state);
       }
-
-      advancedPiece.y -= 1;
-
-      affixPiece(advancedPiece, state);
     },
 
     advancePiece: (state) => {
@@ -227,8 +237,12 @@ export const gameSlice = createSlice({
     },
 
     removeCells: (state) => {
+      const findCellByXAndY = (x, y) => (
+        (cell) => cell.x === x && cell.y === y
+      );
+
       state.affixedCells = state.affixedCells.filter(ac => (
-        !state.matchedCells.some(mc => mc.x === ac.x && mc.y === ac.y)
+        !state.matchedCells.some(findCellByXAndY(ac.x, ac.y))
       ));
 
       // Put matched cells with lesser y values before those with higher
@@ -237,8 +251,17 @@ export const gameSlice = createSlice({
       state.matchedCells.sort((a, b) => a.y - b.y);
 
       state.matchedCells.forEach(mc => {
+        let topImpactedRow = mc.y;
+        while (true) {
+          if (state.affixedCells.find(findCellByXAndY(mc.x, topImpactedRow - 1))) {
+            topImpactedRow -= 1;
+          } else {
+            break;
+          }
+        }
+
         state.affixedCells.forEach(ac => {
-          if (ac.x === mc.x && ac.y < mc.y) {
+          if (ac.x === mc.x && ac.y < mc.y && ac.y >= topImpactedRow) {
             ac.y += 1;
           }
         });
