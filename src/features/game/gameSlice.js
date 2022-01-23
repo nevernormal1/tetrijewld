@@ -12,6 +12,7 @@ const initialState = {
   dropSpeedAccelerated: false,
   status: GameStatuses.stopped,
   removingCells: false,
+  checkingMatchedCells: false,
   affixedCells: [],
 };
 
@@ -29,7 +30,7 @@ const affixPiece = (piece, state) => {
       ...pieceCells,
     ];
 
-    const matchedCells = findMatchedCells(pieceCells, state.affixedCells);
+    const matchedCells = findMatchedCells(state.affixedCells);
 
     matchedCells.forEach(cell => cell.matched = true);
 
@@ -197,6 +198,7 @@ export const gameSlice = createSlice({
       });
 
       state.matchedCells = [];
+      state.checkingMatchedCells = true;
       state.currentPiece = randomPiece();
       state.lastAdvanceTime = Date.now();
     },
