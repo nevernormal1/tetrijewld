@@ -17,30 +17,18 @@ const initialState = {
 };
 
 const affixPiece = (piece, state) => {
-  if (piece.y === 0) {
-    // End game
+  if (piece.y === 0) { // End game
     state.status = GameStatuses.over;
     state.timerID = null;
   } else {
     const pieceCells = cellsForPiece(piece);
 
-    // Drop piece & introduce new piece
     state.affixedCells = [
       ...state.affixedCells,
       ...pieceCells,
     ];
 
-    const matchedCells = findMatchedCells(state.affixedCells);
-
-    matchedCells.forEach(cell => cell.matched = true);
-
-    if (matchedCells.length > 0) {
-      state.currentPiece = null;
-      state.matchedCells = matchedCells;
-      state.removingCells = true;
-    } else {
-      state.currentPiece = randomPiece();
-    }
+    state.checkingMatchedCells = true;
   }
 }
 
@@ -199,8 +187,23 @@ export const gameSlice = createSlice({
 
       state.matchedCells = [];
       state.checkingMatchedCells = true;
-      state.currentPiece = randomPiece();
-      state.lastAdvanceTime = Date.now();
+    },
+
+    checkMatchedCells: (state) => {
+      state.checkingMatchedCells = false;
+
+      const matchedCells = findMatchedCells(state.affixedCells);
+
+      matchedCells.forEach(cell => cell.matched = true);
+
+      if (matchedCells.length > 0) {
+        state.currentPiece = null;
+        state.matchedCells = matchedCells;
+        state.removingCells = true;
+      } else {
+        state.currentPiece = randomPiece();
+        state.lastAdvanceTime = Date.now();
+      }
     },
   },
 });
@@ -208,6 +211,7 @@ export const gameSlice = createSlice({
 const {
   accelerateDropSpeed,
   advancePiece,
+  checkMatchedCells,
   clearRemovingCells,
   decelerateDropSpeed,
   dropPiece,
@@ -256,10 +260,12 @@ const removeAndDropCells = () => (dispatch, getState) => {
 export const handleGameTick = () => (dispatch, getState) => {
   const state = getState()
   const currentStatus = selectGameStatus(state);
-  const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated, removingCells } = state.game;
+  const { lastAdvanceTime, dropSpeed, dropSpeedAccelerated, removingCells, checkingMatchedCells } = state.game;
 
   if (removingCells) {
     dispatch(removeAndDropCells());
+  } else if (checkingMatchedCells) {
+    dispatch(checkMatchedCells());
   } else if (currentStatus === GameStatuses.started && lastAdvanceTime !== null) {
     const compareTime = dropSpeedAccelerated ?
       dropSpeed - dropSpeed * ACCELERATION_FACTOR :
