@@ -14,6 +14,7 @@ const initialState = {
   removingCells: false,
   checkingMatchedCells: false,
   affixedCells: [],
+  nextPieces: [],
 };
 
 const affixPiece = (piece, state) => {
@@ -41,6 +42,7 @@ export const gameSlice = createSlice({
       state.status = GameStatuses.started;
       state.affixedCells = [];
       state.currentPiece = randomPiece();
+      state.nextPieces = Array(3).fill(0).map(randomPiece);
       state.lastAdvanceTime = Date.now();
     },
 
@@ -201,7 +203,8 @@ export const gameSlice = createSlice({
         state.matchedCells = matchedCells;
         state.removingCells = true;
       } else {
-        state.currentPiece = randomPiece();
+        state.currentPiece = state.nextPieces.shift();
+        state.nextPieces = [...state.nextPieces, randomPiece()];
         state.lastAdvanceTime = Date.now();
       }
     },

@@ -38,14 +38,23 @@ const randomColor = () => (
   COLORS[Math.floor(Math.random() * 7)]
 );
 
-export const randomPiece = () => ({
-  id: Date.now(),
-  type: Math.floor(Math.random() * 7),
-  x: 4,
-  y: 0,
-  rotation: 0,
-  colors: Array(4).fill(0).map(randomColor)
-});
+export const randomPiece = function() {
+  let id = 0;
+
+  return () => {
+    const nextId = id;
+    id += 1;
+
+    return {
+      id: nextId,
+      type: Math.floor(Math.random() * 7),
+      x: 4,
+      y: 0,
+      rotation: 0,
+      colors: Array(4).fill(0).map(randomColor),
+    };
+  };
+}();
 
 const insideLeftBoundary = (pieceObj) => (
   pieceObj.offsets().every(offset => (

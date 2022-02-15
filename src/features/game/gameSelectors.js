@@ -12,6 +12,11 @@ const selectCurrentPiece = createSelector(
   (state) => state.currentPiece
 );
 
+const selectNextPieces = createSelector(
+  gameState,
+  (state) => state.nextPieces
+);
+
 const selectAffixedCells = createSelector(
   gameState,
   (state) => state.affixedCells
@@ -21,4 +26,5 @@ export {
   selectGameStatus,
   selectCurrentPiece,
   selectAffixedCells,
+  selectNextPieces,
 };

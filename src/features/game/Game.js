@@ -1,10 +1,15 @@
 import React from 'react';
 
-import { GameStatuses, PIECE_CELL_SIZE } from './constants';
+import {
+  GameStatuses,
+  PIECE_CELL_SIZE,
+  PIECE_CELL_THUMB_SIZE,
+} from './constants';
 import {
   selectGameStatus,
   selectCurrentPiece,
   selectAffixedCells,
+  selectNextPieces,
 } from './gameSelectors';
 import { useSelector } from 'react-redux';
 import { cellsForPiece } from './pieces/pieces';
@@ -18,10 +23,10 @@ const GameOver = () => {
   );
 }
 
-const Cell = ({ cell }) => {
+const Cell = ({ cell, size }) => {
   const style = {
-    left: `${ cell.x * PIECE_CELL_SIZE }px`,
-    top: `${ cell.y * PIECE_CELL_SIZE }px`,
+    left: `${ cell.x * size }px`,
+    top: `${ cell.y * size }px`,
   }
 
   return (
@@ -36,18 +41,38 @@ const AffixedCells = () => {
   const cells = useSelector(selectAffixedCells);
 
   return cells.map(cell => (
-    <Cell key={ cell.id } cell={ cell } />
+    <Cell key={ cell.id } cell={ cell } size={ PIECE_CELL_SIZE }/>
   ))
+};
+
+const Piece = ({ piece, size }) => {
+  return piece && cellsForPiece(piece).map(cell => (
+    <Cell key={ cell.id } cell={ cell } size={ size } />
+  ));
 };
 
 const CurrentPiece = () => {
   const piece = useSelector(selectCurrentPiece);
 
-  if (piece === null) {
-    return null;
-  }
+  return <Piece piece={ piece } size={ PIECE_CELL_SIZE } />
+};
 
-  return cellsForPiece(piece).map(cell => <Cell key={ cell.id } cell={ cell } />);
+const NextPieces = () => {
+  const nextPieces = useSelector(selectNextPieces);
+
+  return (
+    <div id="next-container">
+      Next:
+      <div id="next-pieces">
+        { nextPieces.map(piece => (
+          <div key={ piece.id } className="piece-container">
+            <Piece piece={ piece } size={ PIECE_CELL_THUMB_SIZE } />
+          </div>
+        )) }
+      </div>
+    </div>
+  )
+
 };
 
 const Game = () => {
@@ -63,6 +88,9 @@ const Game = () => {
 
       <CurrentPiece />
       <AffixedCells />
+
+      { gameStatus === GameStatuses.started &&
+        <NextPieces /> }
     </div>
   );
 }
