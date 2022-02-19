@@ -27,7 +27,7 @@ export const cellsForPiece = (piece) => {
   const pieceObj = PieceFactory(piece);
 
   return pieceObj.offsets().map((offset, index) => ({
-    id: piece.id + index,
+    id: `${ piece.id }:${ index }`,
     x: piece.x + offset[0],
     y: piece.y + offset[1],
     color: piece.colors[index],
@@ -35,7 +35,7 @@ export const cellsForPiece = (piece) => {
 }
 
 const randomColor = () => (
-  COLORS[Math.floor(Math.random() * 7)]
+  COLORS[Math.floor(Math.random() * COLORS.length)]
 );
 
 export const randomPiece = function() {
@@ -47,7 +47,7 @@ export const randomPiece = function() {
 
     return {
       id: nextId,
-      type: Math.floor(Math.random() * 7),
+      type: Math.floor(Math.random() * COLORS.length),
       x: 4,
       y: 0,
       rotation: 0,

@@ -152,6 +152,10 @@ export const gameSlice = createSlice({
       }
     },
 
+    togglePause: (state) => {
+      state.status = state.status === GameStatuses.paused ? GameStatuses.started : GameStatuses.paused;
+    },
+
     clearRemovingCells: (state) => {
       state.removingCells = false;
     },
@@ -224,6 +228,7 @@ const {
   rotateLeft,
   rotateRight,
   startGame,
+  togglePause,
 } = gameSlice.actions;
 
 export const handleKeydown = (keyCode) => (dispatch, getState) => {
@@ -244,6 +249,8 @@ export const handleKeydown = (keyCode) => (dispatch, getState) => {
       dispatch(accelerateDropSpeed());
     } else if (keyCode === "Space") {
       dispatch(dropPiece());
+    } else if (keyCode === "KeyP") {
+      dispatch(togglePause());
     }
   }
 };
@@ -253,7 +260,6 @@ export const handleKeyup = (keyCode) => (dispatch, getState) => {
     dispatch(decelerateDropSpeed());
   }
 };
-
 
 const removeAndDropCells = () => (dispatch, getState) => {
   dispatch(clearRemovingCells());
